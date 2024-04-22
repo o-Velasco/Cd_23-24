@@ -18,9 +18,9 @@ int main(int argc, char** argv)
 {
     int fd,c, res;
     struct termios oldtio,newtio;
-    char buf[255];
     int i, sum = 0, speed = 0;
-    unsigned char buf[5]=[0x5C, 0x03, 0x07, 0x04, 0x5C];
+    unsigned char SET[5]={0x5C, 0x03, 0x07, 0x04, 0x5C};
+    unsigned char UA[5]={0x5C, 0x03, 0x06, 0x05, 0x5C};
 
     if ( (argc < 2) ||
          ((strcmp("/dev/ttyS0", argv[1])!=0) &&
@@ -74,14 +74,9 @@ int main(int argc, char** argv)
 
 
 
-    /*for (i = 0; i < 255; i++) {
-        buf[i] = 'a';
-    }*/
+  
 
-    /*testing*/
-    /*buf[25] = '\n';*/
-
-    res = write(fd,buf,5);
+    res = write(fd,SET,5);
     printf("%d bytes written\n", res);
 
 
