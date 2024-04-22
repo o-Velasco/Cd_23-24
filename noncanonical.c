@@ -10,6 +10,8 @@
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
+#define NUM_STATES 5
+
 
 volatile int STOP=FALSE;
 
@@ -18,7 +20,8 @@ int main(int argc, char** argv)
     int fd,c, res;
     struct termios oldtio,newtio;
     char buf[255];
-    unsgigned char UA[5]= [0x5C, 0x03, 0x06, 0x05, 0x5C];
+    unsigned char UA[5]= {0x5C, 0x03, 0x06, 0x05, 0x5C};
+    unsigned char SET[5]= {0x5C, 0x03, 0x07, 0x04, 0x5C};
       
 
     if ( (argc < 2) ||
@@ -66,16 +69,51 @@ int main(int argc, char** argv)
         perror("tcsetattr");
         exit(-1);
     }
+    int state=0;
+    int i;
 
     printf("New termios structure set\n");
 
     while (STOP==FALSE) {       /* loop for input */
-        res = read(fd,buf,1);   /* returns after 5 chars have been input */
-       if(res>0){
-        switch              /*implementar maquina de estados, quando chega ao ultimo estado, STOP=TRUE*/        
+        res = read(fd,buf,5);   /* returns after 5 chars have been input */ 
+        printf("dd");
+        if(res>0){
+                                /*implementar maquina de estados, quando chega ao ultimo estado, STOP=TRUE*/   
+            while(state<NUM_STATES){
+                switch(state){
+                    case 0:
+                        if(res==SET[0]){
+                            state++;
+                            printf("state0\n");
+                        }
+                        break;
+                    case 1:
+                        if(res==SET[1]){
+                            state++;
+                            
+                        }
+                        break;
+                    case 2:
+                        if(res==SET[2]){
+                            state++;
+                        }
+                        break;
+                    case 3:
+                        if(res==SET[3]){
+                            state++;
+                        }
+                        break;
+                    case 4:
+                        if(res==SET[4]){
+                            state++;
+                        }
+                        break;
+                }
+            }
+           
+        STOP=TRUE;
         }
     }
-
 
 
     /*
