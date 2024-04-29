@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 {
     int fd,c, res;
     struct termios oldtio,newtio;
-    char buf[255];
+    unsigned char buf[255];
     unsigned char UA[5]= {0x5C, 0x03, 0x06, 0x05, 0x5C};
     unsigned char SET[5]= {0x5C, 0x03, 0x07, 0x04, 0x5C};
       
@@ -54,8 +54,8 @@ int main(int argc, char** argv)
     /* set input mode (non-canonical, no echo,...) */
     newtio.c_lflag = 0;
 
-    newtio.c_cc[VTIME]    = 0;   /* inter-character timer unused */
-    newtio.c_cc[VMIN]     = 5;   /* blocking read until 5 chars received */
+    newtio.c_cc[VTIME]    = 1;   /* inter-character timer used */
+    newtio.c_cc[VMIN]     = 0;   /* blocking read until 5 chars received */
 
     /*
     VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a
@@ -75,43 +75,71 @@ int main(int argc, char** argv)
     printf("New termios structure set\n");
 
     while (STOP==FALSE) {       /* loop for input */
-        res = read(fd,buf,5);   /* returns after 5 chars have been input */ 
-        printf("dd");
+        res = read(fd,buf,1);   /* returns after 1 chars have been input */ 
         if(res>0){
                                 /*implementar maquina de estados, quando chega ao ultimo estado, STOP=TRUE*/   
-            while(state<NUM_STATES){
                 switch(state){
                     case 0:
-                        if(res==SET[0]){
-                            state++;
-                            printf("state0\n");
+                        if(buf[0]==SET[0]){
+                            state=1;
+                            printf("state1 %d\n", state);
                         }
                         break;
                     case 1:
-                        if(res==SET[1]){
-                            state++;
-                            
+                        if(buf[0]==SET[1]){
+                            state=2;
+                            printf("state2 %d\n", state);
+                        }
+                        else if(buf[0]==SET[0]){
+                            state=1;
+                            printf("state3 %d\n", state);
+                            printf("%02X", buf[0]);  
+                        }
+                        else{
+                            state=0;
+                            printf("state4 %d\n", state);
                         }
                         break;
                     case 2:
-                        if(res==SET[2]){
-                            state++;
+                        if(buf[0]==SET[2]){
+                            state=3;
+                            printf("state5 %d\n", state);
+                        }
+                        else if(buf[0]==SET[0]){
+                            state=1;
+                            printf("state6 %d\n", state);
+                        }
+                        else{
+                            state=0;
+                            printf("state7 %d\n", state);
                         }
                         break;
                     case 3:
-                        if(res==SET[3]){
-                            state++;
+                        if(buf[0]==SET[3]){
+                            state=4;
+                            printf("state8 %d\n", state);
+                        }
+                        else if(buf[0]==SET[0]){
+                            state=1;
+                            printf("state9 %d\n", state);
+                        }
+                        else{
+                            state=0;
+                            printf("state10 %d\n", state);
                         }
                         break;
                     case 4:
-                        if(res==SET[4]){
-                            state++;
+                        if(buf[0]==SET[4]){
+                           STOP=TRUE;
+                            printf("state11 %d\n", state);
+                        }
+                        else{
+                            state=0;
+                            printf("state13 %d\n", state);
                         }
                         break;
                 }
-            }
            
-        STOP=TRUE;
         }
     }
 
@@ -119,7 +147,7 @@ int main(int argc, char** argv)
     /*
     O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guião
     */
-
+    sleep(1);
     tcsetattr(fd,TCSANOW,&oldtio);
     close(fd);
     return 0;
