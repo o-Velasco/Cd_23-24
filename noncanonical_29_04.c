@@ -10,7 +10,6 @@
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
-#define NUM_STATES 5
 
 
 volatile int STOP=FALSE;
@@ -70,7 +69,6 @@ int main(int argc, char** argv)
         exit(-1);
     }
     int state=0;
-    int i;
 
     printf("New termios structure set\n");
 
@@ -93,7 +91,6 @@ int main(int argc, char** argv)
                         else if(buf[0]==SET[0]){
                             state=1;
                             printf("state3 %d\n", state);
-                            printf("%02X", buf[0]);  
                         }
                         else{
                             state=0;
@@ -143,7 +140,8 @@ int main(int argc, char** argv)
         }
     }
 
-
+    res = write(fd,UA,5);
+    printf("%d bytes written\n", res);
     /*
     O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guião
     */
