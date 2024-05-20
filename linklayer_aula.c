@@ -126,11 +126,11 @@ int llwrite(char* buf1[],int size){
 		}
 		//trama I
 		unsigned char buf4[j+5]={};
-		buf4[0]=SET[0];
-		buf4[1]=SET[1];
-		buf4[2]=SET[2];
-		buf4[3]=SET[3];
-		buf4[j+4]=SET[4];
+		buf4[0]=0x5c;
+		buf4[1]=0x03;
+		buf4[2]=0x80;
+		buf4[3]=0x03^0x80;
+		buf4[j+4]=0x5c;
 		for(i=0;i<j;i++){
 			buf4[i+4]=buf3[i];
 		}		
