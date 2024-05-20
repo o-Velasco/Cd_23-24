@@ -124,4 +124,5 @@ int llwrite(char* ,int size){
 			}
 			j++;
 		}
+		return j;
 	}
