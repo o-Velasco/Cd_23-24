@@ -96,10 +96,10 @@ int llopen(linkLayer packet){
     if(STOP==TRUE) return 1;
 }
 
-int llwrite(char* ,int size){
-		unsigned char buf1[255]={};
+int llwrite(char* buf1[],int size){
 		unsigned char buf2[256]={};
 		unsigned char buf3[513]={};
+
 
 		int i=0, j=0;
 		unsigned char xor_result=0;
@@ -124,5 +124,15 @@ int llwrite(char* ,int size){
 			}
 			j++;
 		}
+		//trama I
+		unsigned char buf4[j+5]={};
+		buf4[0]=SET[0];
+		buf4[1]=SET[1];
+		buf4[2]=SET[2];
+		buf4[3]=SET[3];
+		buf4[j+4]=SET[4];
+		for(i=0;i<j;i++){
+			buf4[i+4]=buf3[i];
+		}		
 		return j;
 	}
